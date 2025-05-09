@@ -1,0 +1,47 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table products {
+  id String [pk]
+  sku String [unique, not null]
+  barcode String [unique, not null]
+  name String [not null]
+  description String [not null]
+  imageUrl String [not null]
+  purchasePrice Decimal [not null]
+  salePrice Decimal [not null]
+  weight Decimal [not null]
+  width Decimal [not null]
+  height Decimal [not null]
+  depth Decimal [not null]
+  minStock Int [not null]
+  maxStock Int [not null]
+  isActive Boolean [not null, default: true]
+  categoryId String [not null]
+  category categories [not null]
+  defaultSupplierId String
+  defaultSupplier suppliers
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  disabledAt DateTime [default: `now()`]
+}
+
+Table categories {
+  id String [pk]
+  name String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  products products [not null]
+}
+
+Table suppliers {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  products products [not null]
+}
+
+Ref: products.categoryId > categories.id
+
+Ref: products.defaultSupplierId > suppliers.id

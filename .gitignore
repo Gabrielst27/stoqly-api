@@ -48,6 +48,9 @@ Dockerfile
 docker-compose.yml
 .docker
 
+# prisma
+generated
+
 # temp directory
 .temp
 .tmp
