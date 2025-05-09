@@ -15,8 +15,8 @@ Table products {
   width Decimal [not null]
   height Decimal [not null]
   depth Decimal [not null]
-  minStock Int [not null]
-  maxStock Int [not null]
+  minStock Int
+  maxStock Int
   isActive Boolean [not null, default: true]
   categoryId String [not null]
   category categories [not null]
@@ -25,6 +25,17 @@ Table products {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   disabledAt DateTime [default: `now()`]
+  productStockHistories product_stock_histories [not null]
+}
+
+Table product_stock_histories {
+  id String [pk]
+  productId String [not null]
+  product products [not null]
+  stock Int [not null]
+  reason TransferReasons [not null]
+  startDate DateTime [default: `now()`, not null]
+  endDate DateTime
 }
 
 Table categories {
@@ -42,6 +53,15 @@ Table suppliers {
   products products [not null]
 }
 
+Enum TransferReasons {
+  SALE
+  PURCHASE
+  TRANSFER
+  ADJUSTMENT
+}
+
 Ref: products.categoryId > categories.id
 
 Ref: products.defaultSupplierId > suppliers.id
+
+Ref: product_stock_histories.productId > products.id

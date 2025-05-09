@@ -18,31 +18,51 @@ generator dbml {
   provider = "prisma-dbml-generator"
 }
 
+enum TransferReasons {
+  SALE
+  PURCHASE
+  TRANSFER
+  ADJUSTMENT
+}
+
 model Product {
-  id                String    @id @default(uuid()) @db.Uuid
-  sku               String    @unique @db.VarChar(60)
-  barcode           String    @unique @db.VarChar(60)
-  name              String    @db.VarChar(60)
-  description       String    @db.VarChar(256)
-  imageUrl          String    @db.VarChar(512)
-  purchasePrice     Decimal   @db.Decimal(12, 2)
-  salePrice         Decimal   @db.Decimal(12, 2)
-  weight            Decimal   @db.Decimal(8, 3)
-  width             Decimal   @db.Decimal()
-  height            Decimal   @db.Decimal()
-  depth             Decimal   @db.Decimal()
-  minStock          Int       @db.SmallInt
-  maxStock          Int       @db.SmallInt
-  isActive          Boolean   @default(true)
-  categoryId        String    @db.Uuid
-  category          Category  @relation(fields: [categoryId], references: [id])
-  defaultSupplierId String?   @db.Uuid
-  defaultSupplier   Supplier? @relation(fields: [defaultSupplierId], references: [id])
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @default(now())
-  disabledAt        DateTime? @default(now())
+  id                    String                @id @default(uuid()) @db.Uuid
+  sku                   String                @unique @db.VarChar(60)
+  barcode               String                @unique @db.VarChar(60)
+  name                  String                @db.VarChar(60)
+  description           String                @db.VarChar(256)
+  imageUrl              String                @db.VarChar(512)
+  purchasePrice         Decimal               @db.Decimal(12, 2)
+  salePrice             Decimal               @db.Decimal(12, 2)
+  weight                Decimal               @db.Decimal(8, 3)
+  width                 Decimal               @db.Decimal()
+  height                Decimal               @db.Decimal()
+  depth                 Decimal               @db.Decimal()
+  minStock              Int?                  @db.SmallInt
+  maxStock              Int?                  @db.SmallInt
+  isActive              Boolean               @default(true)
+  categoryId            String                @db.Uuid
+  category              Category              @relation(fields: [categoryId], references: [id])
+  defaultSupplierId     String?               @db.Uuid
+  defaultSupplier       Supplier?             @relation(fields: [defaultSupplierId], references: [id])
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @default(now())
+  disabledAt            DateTime?             @default(now())
+  productStockHistories ProductStockHistory[]
 
   @@map("products")
+}
+
+model ProductStockHistory {
+  id        String          @id @default(uuid()) @db.Uuid
+  productId String          @db.Uuid
+  product   Product         @relation(fields: [productId], references: [id])
+  stock     Int             @db.Integer
+  reason    TransferReasons
+  startDate DateTime        @default(now())
+  endDate   DateTime?
+
+  @@map("product_stock_histories")
 }
 
 model Category {
