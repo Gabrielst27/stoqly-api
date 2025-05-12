@@ -25,11 +25,29 @@ enum TransferReasons {
   ADJUSTMENT
 }
 
+enum Role {
+  USER
+  MANAGER
+  OWNER
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @db.VarChar(64)
+  email     String   @unique @db.VarChar(128)
+  password  String   @db.VarChar(32)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("users")
+}
+
 model Product {
   id                    String                @id @default(uuid()) @db.Uuid
-  sku                   String                @unique @db.VarChar(60)
-  barcode               String                @unique @db.VarChar(60)
-  name                  String                @db.VarChar(60)
+  sku                   String                @unique @db.VarChar(64)
+  barcode               String                @unique @db.VarChar(64)
+  name                  String                @db.VarChar(64)
   description           String                @db.VarChar(256)
   imageUrl              String                @db.VarChar(512)
   purchasePrice         Decimal               @db.Decimal(12, 2)
@@ -45,6 +63,8 @@ model Product {
   category              Category              @relation(fields: [categoryId], references: [id])
   defaultSupplierId     String?               @db.Uuid
   defaultSupplier       Supplier?             @relation(fields: [defaultSupplierId], references: [id])
+  locationId            String                @db.Uuid
+  location              Location              @relation(fields: [locationId], references: [id])
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @default(now())
   disabledAt            DateTime?             @default(now())
@@ -53,21 +73,36 @@ model Product {
   @@map("products")
 }
 
+model Location {
+  id                    String                @id @default(uuid()) @db.Uuid
+  zone                  String                @db.VarChar(32)
+  aisle                 String                @db.VarChar(64)
+  shelf                 String                @db.VarChar(64)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @default(now())
+  products              Product[]
+  productStockHistories ProductStockHistory[]
+
+  @@map("locations")
+}
+
 model ProductStockHistory {
-  id        String          @id @default(uuid()) @db.Uuid
-  productId String          @db.Uuid
-  product   Product         @relation(fields: [productId], references: [id])
-  stock     Int             @db.Integer
-  reason    TransferReasons
-  startDate DateTime        @default(now())
-  endDate   DateTime?
+  id         String          @id @default(uuid()) @db.Uuid
+  productId  String          @db.Uuid
+  product    Product         @relation(fields: [productId], references: [id])
+  stock      Int             @db.Integer
+  reason     TransferReasons
+  locationId String?         @db.Uuid
+  location   Location?       @relation(fields: [locationId], references: [id])
+  startDate  DateTime        @default(now())
+  endDate    DateTime?
 
   @@map("product_stock_histories")
 }
 
 model Category {
   id        String    @id @default(uuid()) @db.Uuid
-  name      String    @unique @db.VarChar(60)
+  name      String    @unique @db.VarChar(64)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
   products  Product[]
