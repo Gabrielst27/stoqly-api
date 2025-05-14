@@ -1,3 +1,4 @@
+import { BaseEntity } from '../../shared/entities/base-entity';
 import { ERole } from '../../shared/enums/role.enum';
 import { EntityValidationError } from '../../shared/errors/entity-validation.error';
 import { UserValidator } from '../validators/user.validator';
@@ -11,9 +12,13 @@ export type UserProps = {
   updatedAt?: Date;
 };
 
-export class UserEntity {
-  constructor(private readonly props: UserProps) {
+export class UserEntity extends BaseEntity<UserProps> {
+  constructor(
+    public readonly props: UserProps,
+    id?: string,
+  ) {
     UserEntity.validate(props);
+    super(props, id);
     this.props.role = this.props.role ?? ERole.USER;
     this.props.createdAt = this.props.createdAt ?? new Date();
     this.props.updatedAt = this.props.updatedAt ?? new Date();
